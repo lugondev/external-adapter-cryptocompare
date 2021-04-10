@@ -14,23 +14,23 @@ const customError = (data) => {
 // with a Boolean value indicating whether or not they
 // should be required.
 const customParams = {
-  base: ['base', 'from', 'coin'],
-  quote: ['quote', 'to', 'market'],
-  endpoint: false
+  ticker: ['ticker', 'ticker', 'vn30'],
+  param: ['param', 'param', 'price']
 }
 
 const createRequest = (input, callback) => {
   // The Validator helps you validate the Chainlink request data
   const validator = new Validator(callback, input, customParams)
   const jobRunID = validator.validated.id
-  const endpoint = validator.validated.data.endpoint || 'price'
-  const url = `https://min-api.cryptocompare.com/data/${endpoint}`
-  const fsym = validator.validated.data.base.toUpperCase()
-  const tsyms = validator.validated.data.quote.toUpperCase()
+  console.log(validator.validated.data)
+  const ticker = validator.validated.data.ticker
+  const url = `https://stock.pixelstox.io/${ticker}`
+  console.log({ url })
+  const param = validator.validated.data.param
 
   const params = {
-    fsym,
-    tsyms
+    param,
+    ticker
   }
 
   // This is where you would add method and headers
@@ -50,7 +50,8 @@ const createRequest = (input, callback) => {
       // It's common practice to store the desired value at the top-level
       // result key. This allows different adapters to be compatible with
       // one another.
-      response.data.result = Requester.validateResultNumber(response.data, [tsyms])
+      console.log(response.data)
+      response.data.result = Requester.validateResultNumber(response.data, [param])
       callback(response.status, Requester.success(jobRunID, response))
     })
     .catch(error => {
